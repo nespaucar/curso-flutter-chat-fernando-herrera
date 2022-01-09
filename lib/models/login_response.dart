@@ -18,7 +18,7 @@ class LoginResponse {
 
     factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
         ok: json["ok"],
-        usuario: Usuario.fromJson(json["usuarioDB"]),
+        usuario: Usuario.fromJson(json["usuario"]),
         token: json["token"],
     );
 

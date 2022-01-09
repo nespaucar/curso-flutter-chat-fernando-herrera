@@ -95,7 +95,8 @@ class AuthService with ChangeNotifier {
       return true;
     } else {
       final respBody = jsonDecode(resp.body);
-      return respBody['msg'];
+      print(respBody);
+      return respBody['msg']==null?'Error interno':respBody['msg'];
     }
 
   }

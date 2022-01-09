@@ -63,6 +63,16 @@ class __FormState extends State<_Form> {
 
     final authService = Provider.of<AuthService>(context);
 
+    bool verificarCamposNoNulos() {
+      bool camposLlenos = false;
+      if(emailCtrl.text.toString()!=''&&
+      passCtrl.text.toString()!=''&&
+      nameCtrl.text.toString()!='') {
+        camposLlenos = true;
+      }
+      return camposLlenos;
+    }
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -87,7 +97,7 @@ class __FormState extends State<_Form> {
           ),
           BotonAzul(
             text: 'Crear Cuenta',
-            onPressed: authService.autenticando ? null : () async {
+            onPressed: authService.autenticando && verificarCamposNoNulos() ? null : () async {
               print(nameCtrl.text);
               print(emailCtrl.text);
               print(passCtrl.text);
@@ -99,7 +109,7 @@ class __FormState extends State<_Form> {
               if(registroOk == true) {
                 navegarPagina(context, UsuariosPage());
               } else {
-                mostrarAlerta(context, 'Registro incorrecto', registroOk);
+                mostrarAlerta(context, 'Registro incorrecto', registroOk.toString());
               }
             }
           )
