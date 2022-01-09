@@ -1,10 +1,11 @@
+import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:flutter/material.dart';
 
 class Labels extends StatelessWidget {
 
   final String titulo;
   final String subtitulo;
-  final String ruta;
+  final Widget ruta;
 
   const Labels({
     Key? key,
@@ -23,7 +24,7 @@ class Labels extends StatelessWidget {
           GestureDetector(
             child: Text(this.subtitulo, style: TextStyle(color: Colors.blue[600], fontSize: 18, fontWeight: FontWeight.bold)),
             onTap: () {
-              Navigator.pushReplacementNamed(context, this.ruta);
+              navegarPagina(context, this.ruta);
             },
           )
         ]

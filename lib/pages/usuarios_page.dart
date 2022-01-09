@@ -1,5 +1,9 @@
+import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:chat_front/models/usuario.dart';
+import 'package:chat_front/pages/login_page.dart';
+import 'package:chat_front/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsuariosPage extends StatefulWidget {
@@ -19,15 +23,23 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
+    final String nombreUsuario = (usuario == null ? "" : usuario.nombre);
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text("Mi Nombre", style: TextStyle(color: Colors.black54))),
+            child: Text(nombreUsuario, style: TextStyle(color: Colors.black54))),
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.exit_to_app, color: Colors.black54),
-          onPressed: () {},
+          onPressed: () {            
+            navegarPagina(context, LoginPage());
+            AuthService.deleteToken();
+          },
         ),
         actions: [
           Container(

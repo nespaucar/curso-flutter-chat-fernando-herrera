@@ -1,9 +1,13 @@
+import 'package:chat_front/helpers/mostrar_alerta.dart';
+import 'package:chat_front/pages/login_page.dart';
+import 'package:chat_front/services/auth_service.dart';
 import 'package:chat_front/widgets/boton_azul.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_front/widgets/custom_input.dart';
 import 'package:chat_front/widgets/labels.dart';
 import 'package:chat_front/widgets/logo.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
 
@@ -24,7 +28,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 _Form(),
                 Labels(
-                  ruta: 'login',
+                  ruta: LoginPage(),
                   titulo: 'Ya tengo una',
                   subtitulo: 'Regresar al Login'
                 ),
@@ -54,6 +58,9 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -77,10 +84,21 @@ class __FormState extends State<_Form> {
             isPassword: true,
           ),
           BotonAzul(
-            text: 'Ingresar',
-            onPressed: () {
+            text: 'Crear Cuenta',
+            onPressed: authService.autenticando ? () => null : () async {
+              print(nameCtrl.text);
               print(emailCtrl.text);
               print(passCtrl.text);
+              final registroOk = await authService.register(
+                nameCtrl.text.trim(),
+                emailCtrl.text.trim(),
+                passCtrl.text.trim()
+              );
+              if(registroOk == true) {
+
+              } else {
+                mostrarAlerta(context, 'Registro incorrecto', registroOk);
+              }
             }
           )
         ]
