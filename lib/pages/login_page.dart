@@ -3,6 +3,7 @@ import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:chat_front/pages/register_page.dart';
 import 'package:chat_front/pages/usuarios_page.dart';
 import 'package:chat_front/services/auth_service.dart';
+import 'package:chat_front/services/socket_service.dart';
 import 'package:chat_front/widgets/boton_azul.dart';
 import 'package:flutter/material.dart';
 
@@ -60,6 +61,7 @@ class __FormState extends State<_Form> {
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: EdgeInsets.only(top: 40),
@@ -86,6 +88,8 @@ class __FormState extends State<_Form> {
               FocusScope.of(context).unfocus();
               final loginOk = await authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
               if(loginOk) {
+                // Empezamos los sockets
+                socketService.connect();
                 navegarPagina(context, UsuariosPage());
               } else {
                 mostrarAlerta(context, 'Login Incorrecto', 'Revisa tus credenciales nuevamente');

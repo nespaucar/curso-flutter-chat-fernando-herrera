@@ -3,6 +3,7 @@ import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:chat_front/pages/login_page.dart';
 import 'package:chat_front/pages/usuarios_page.dart';
 import 'package:chat_front/services/auth_service.dart';
+import 'package:chat_front/services/socket_service.dart';
 import 'package:chat_front/widgets/boton_azul.dart';
 import 'package:flutter/material.dart';
 
@@ -62,6 +63,7 @@ class __FormState extends State<_Form> {
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     bool verificarCamposNoNulos() {
       bool camposLlenos = false;
@@ -107,6 +109,8 @@ class __FormState extends State<_Form> {
                 passCtrl.text.trim()
               );
               if(registroOk == true) {
+                // Conectamos el servidor de sockets
+                socketService.connect();
                 navegarPagina(context, UsuariosPage());
               } else {
                 mostrarAlerta(context, 'Registro incorrecto', registroOk.toString());
