@@ -1,5 +1,7 @@
 import 'package:chat_front/helpers/mostrar_alerta.dart';
+import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:chat_front/pages/login_page.dart';
+import 'package:chat_front/pages/usuarios_page.dart';
 import 'package:chat_front/services/auth_service.dart';
 import 'package:chat_front/widgets/boton_azul.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +87,7 @@ class __FormState extends State<_Form> {
           ),
           BotonAzul(
             text: 'Crear Cuenta',
-            onPressed: authService.autenticando ? () => null : () async {
+            onPressed: authService.autenticando ? null : () async {
               print(nameCtrl.text);
               print(emailCtrl.text);
               print(passCtrl.text);
@@ -95,7 +97,7 @@ class __FormState extends State<_Form> {
                 passCtrl.text.trim()
               );
               if(registroOk == true) {
-
+                navegarPagina(context, UsuariosPage());
               } else {
                 mostrarAlerta(context, 'Registro incorrecto', registroOk);
               }
