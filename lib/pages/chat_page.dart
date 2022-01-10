@@ -1,8 +1,14 @@
 import 'dart:io';
 
+import 'package:chat_front/helpers/navegar_pagina.dart';
+import 'package:chat_front/pages/usuarios_page.dart';
+import 'package:chat_front/services/auth_service.dart';
+import 'package:chat_front/services/chat_service.dart';
+import 'package:chat_front/services/socket_service.dart';
 import 'package:chat_front/widgets/chat_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class ChatPage extends StatefulWidget {
@@ -17,10 +23,42 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   final _focusNode = FocusNode();
 
   bool _estaEscribiendo = false;
+  late ChatService chatService;
+  late SocketService socketService;
+  late AuthService authService;
+  
   List<ChatMessage> _messages = [];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    this.chatService = Provider.of<ChatService>(context, listen: false);
+    this.socketService = Provider.of<SocketService>(context, listen: false);
+    this.authService = Provider.of<AuthService>(context, listen: false);
+
+    // Escuchar mensajes
+    this.socketService.socket.on('mensaje-persona', _escucharMensaje);
+    super.initState();
+  }
+
+  void _escucharMensaje(dynamic payload) {
+    ChatMessage message = ChatMessage(
+      uid: payload['de'],
+      texto: payload['mensaje'],
+      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 300)),
+    );
+    setState(() {
+      this._messages.insert(0, message);
+      // Actualizar el controlador para que se vean los cambios
+      message.animationController.forward();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {    
+
+    final usuarioPara = this.chatService.usuarioPara;
+    final String nombreUsuario = (usuarioPara == null ? "" : usuarioPara.nombre);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -28,12 +66,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           child: Column(
             children: [
               CircleAvatar(
-                child: Text('Te', style: TextStyle(fontSize: 12)),
+                child: Text(nombreUsuario.substring(0, 2), style: TextStyle(fontSize: 12)),
                 backgroundColor: Colors.blue[100],
                 maxRadius: 14,
               ),
               SizedBox(height: 3),
-              Text('Melisa Flores', style: TextStyle(color: Colors.black87, fontSize: 12))
+              Text(nombreUsuario, style: TextStyle(color: Colors.black87, fontSize: 12))
             ],
           ),
         ),
@@ -132,6 +170,13 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       );
       _messages.insert(0, newMessage);
       newMessage.animationController.forward();
+
+      // Envío mensaje al socket service
+      socketService.emit('mensaje-personal', {
+        'de': this.authService.usuario?.uid,
+        'para': this.chatService.usuarioPara?.uid,
+        'mensaje': texto.trim()
+      });
     }  
 
     setState(() => _estaEscribiendo = false);    
@@ -144,6 +189,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       // Cierro todas las animaciones
       message.animationController.dispose();
     }
+    // Desconectar socket de mensajes
+    this.socketService.socket.off('mensaje-personal');
     super.dispose();
   }
 }

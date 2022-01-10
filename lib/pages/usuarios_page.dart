@@ -1,7 +1,9 @@
 import 'package:chat_front/helpers/navegar_pagina.dart';
 import 'package:chat_front/models/usuario.dart';
+import 'package:chat_front/pages/chat_page.dart';
 import 'package:chat_front/pages/login_page.dart';
 import 'package:chat_front/services/auth_service.dart';
+import 'package:chat_front/services/chat_service.dart';
 import 'package:chat_front/services/socket_service.dart';
 import 'package:chat_front/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +103,11 @@ class _UsuariosPageState extends State<UsuariosPage> {
             borderRadius: BorderRadius.circular(100)
           ),
         ),
+        onTap: () {
+          final chatService = Provider.of<ChatService>(context, listen: false);
+          chatService.usuarioPara = usuario;
+          Navigator.pushNamed(context, 'chat');
+        },
       );
   }
 
