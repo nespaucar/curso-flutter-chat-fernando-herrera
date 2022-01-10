@@ -10,7 +10,7 @@ import 'package:chat_front/models/usuario.dart';
 
 class AuthService with ChangeNotifier {
 
-  Usuario? usuario;
+  late Usuario usuario;
   bool _autenticando = false;
   
   final _storage = FlutterSecureStorage();

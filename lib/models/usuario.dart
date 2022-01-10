@@ -9,13 +9,13 @@ class Usuario {
         required this.online,
         required this.nombre,
         required this.email,
-        required this.uid,
+        this.uid,
     });
 
     bool online;
     String nombre;
     String email;
-    String uid;
+    String? uid;
 
     factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         online: json["online"],

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:chat_front/helpers/navegar_pagina.dart';
-import 'package:chat_front/pages/usuarios_page.dart';
+import 'package:chat_front/models/mensaje.dart';
+import 'package:chat_front/models/usuario.dart';
 import 'package:chat_front/services/auth_service.dart';
 import 'package:chat_front/services/chat_service.dart';
 import 'package:chat_front/services/socket_service.dart';
@@ -37,7 +37,25 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     // Escuchar mensajes
     this.socketService.socket.on('mensaje-persona', _escucharMensaje);
+
+    // Cargar Mensajes
+    _cargarHistorial(this.chatService.usuarioPara);
+
     super.initState();
+  }
+
+  void _cargarHistorial(Usuario usuarioID) async {
+    List<Mensaje> chat = await this.chatService.getChat(usuarioID.uid);
+
+    final history = chat.map((m) => ChatMessage(
+      texto: m.mensaje,
+      uid: m.de,
+      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 300))..forward(),
+    ));
+
+    setState(() {
+      this._messages.insertAll(0, history);
+    });
   }
 
   void _escucharMensaje(dynamic payload) {
@@ -161,8 +179,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
     if(texto.trim() != '') {
       ChatMessage newMessage = ChatMessage(
-        uid: '123',
-        texto: texto,
+        uid: authService.usuario.uid.toString(),
+        texto: texto.trim(),
         animationController: AnimationController(
           vsync: this,
           duration: Duration(milliseconds: 400)
@@ -173,8 +191,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
       // Envío mensaje al socket service
       socketService.emit('mensaje-personal', {
-        'de': this.authService.usuario?.uid,
-        'para': this.chatService.usuarioPara?.uid,
+        'de': this.authService.usuario.uid,
+        'para': this.chatService.usuarioPara.uid,
         'mensaje': texto.trim()
       });
     }  
